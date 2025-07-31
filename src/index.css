@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* .page-loading {
+  cursor: progress !important;
+}
+
+.page-loading>* {
+  pointer-events: none !important;
+}
+
+.page-loading-false {
+  cursor: progress !important;
+} */
+
+/* .ant-modal-content {
+  padding: 10px !important;
+}
+ */
+
+/* :where(.css-dev-only-do-not-override-qnu6hi).ant-drawer-right>.ant-drawer-content-wrapper {
+  padding: 13px;
+  box-shadow: none;
+}
+
+:where(.css-dev-only-do-not-override-qnu6hi).ant-drawer .ant-drawer-content {
+  border-radius: 13px;
+}
+
+:where(.css-dev-only-do-not-override-qnu6hi).ant-card .ant-card-body {
+  padding: 14px;
+}
+
+:where(.css-dev-only-do-not-override-qnu6hi).ant-drawer .ant-drawer-body {
+  padding: 14px;
+}
+
+@media (max-width: 768px) {
+  :where(.css-dev-only-do-not-override-qnu6hi).ant-drawer .ant-drawer-content-wrapper {
+    padding: 12px;
+    box-shadow: none;
+  }
+
+  :where(.css-dev-only-do-not-override-qnu6hi).ant-drawer .ant-drawer-content {
+    border-radius: 12px;
+  }
+
+  :where(.css-dev-only-do-not-override-qnu6hi).ant-drawer .ant-drawer-content {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+}
+
+.spinner {
+  position: relative;
+  width: 15.7px;
+  height: 15.7px;
+}
+
+.spinner div {
+  animation: spinner-4t3wzl 1.875s infinite backwards;
+  background-color: #474bff;
+  border-radius: 50%;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+
+
+Xóa viền của container
+.rpv-default-layout__container {
+  border: 0 !important;
+  box-shadow: none !important;
+  Xóa cả bóng nếu có
+} */
+
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #a3a3a3;
+  border: 3px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a3a3a3;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #a3a3a3 #f1f1f1;
+} */
+
+ ::-webkit-scrollbar:horizontal {
+  height: 12px;
+    /* Chiều cao của thanh cuộn ngang   */
+} 
+ 
+::-webkit-scrollbar-track:horizontal {
+  background: #f1f1f1;
+   /* Màu nền của track */
+} 
+::-webkit-scrollbar-thumb:horizontal {
+  background-color: #a3a3a3;
+  /* Màu của thanh cuộn */
+  border-radius: 6px;
+  /* Bo góc thanh cuộn */
+  border: 3px solid #f1f1f1;
+  /* Viền xung quanh thanh cuộn */
+}
+
+::-webkit-scrollbar-thumb:horizontal:hover {
+  background-color: #a3a3a3;
+  /* Màu thanh cuộn khi hover */
+}

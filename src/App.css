@@ -1,0 +1,61 @@
+/* Tùy chỉnh thanh cuộn cho Webkit (Chrome, Safari, Edge, Opera) */
+::-webkit-scrollbar {
+    width: 12px; /* Chiều rộng của thanh cuộn dọc */
+    height: 12px; /* Chiều cao của thanh cuộn ngang */
+    cursor: pointer;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Màu nền của track */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #a3a3a3; /* Màu thanh cuộn */
+    border: 3px solid #f1f1f1; /* Viền của thanh cuộn */
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #888; /* Màu thanh cuộn khi hover */
+  }
+  
+  /* Tùy chỉnh thanh cuộn ngang */
+  ::-webkit-scrollbar:horizontal {
+    height: 12px; /* Chiều cao của thanh cuộn ngang */
+  }
+  
+  ::-webkit-scrollbar-track:horizontal {
+    background: #f1f1f1; /* Màu nền của track */
+  }
+  
+  ::-webkit-scrollbar-thumb:horizontal {
+    background-color: #a3a3a3; /* Màu thanh cuộn */
+    border: 3px solid #f1f1f1; /* Viền thanh cuộn ngang */
+  }
+  
+  ::-webkit-scrollbar-thumb:horizontal:hover {
+    background-color: #888; /* Màu thanh cuộn ngang khi hover */
+  }
+  
+  /* Hỗ trợ Firefox */
+  html {
+    scrollbar-width: thin; /* Đặt độ dày thanh cuộn cho Firefox */
+    scrollbar-color: #a3a3a3 #f1f1f1; /* Màu sắc thanh cuộn và track trong Firefox */
+  }
+  
+  /* Tùy chỉnh cho tất cả các phần tử */
+  * {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #a3a3a3 #f1f1f1; /* Firefox */
+  }
+  /* Khi loading, con trỏ sẽ hiển thị "wait" và vô hiệu hóa tất cả thao tác */
+.loading {
+  cursor: wait !important;
+  pointer-events: none !important;
+}
+.main-content.page-loading {
+  cursor: progress !important;
+}
+
+.main-content.page-loading * {
+  pointer-events: none !important;
+}
