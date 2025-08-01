@@ -15,6 +15,8 @@ const RolesUsersMaster = ({
   handleRowAppendRoles,
   setEditedRowsRoles,
   onCellClicked,
+  onSearchRoles,
+  isLoadingRole,
 
   defaultColsUsers,
   gridDataUsers,
@@ -26,15 +28,12 @@ const RolesUsersMaster = ({
   handleRowAppendUsers,
   setEditedRowsUsers,
   onCellClickedUser,
+  selectionUser,
+  setSelectionUser,
+  onSearchUsers,
+  isLoadingUser,
 }) => {
   const { t } = useTranslation();
-
-  const onChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-  const onSearch = (value) => {
-    console.log('search:', value);
-  };
 
   return (
     <div className="bg-slate-50 h-full rounded-md overflow-auto ">
@@ -51,7 +50,9 @@ const RolesUsersMaster = ({
               setNumRows={setNumRows}
               handleRowAppend={handleRowAppendRoles}
               setEditedRows={setEditedRowsRoles}
-              onCellClicked = {onCellClicked}
+              onCellClicked={onCellClicked}
+              onSearch={onSearchRoles}
+              isLoading = {isLoadingRole}
             />
           </SplitterPanel>
 
@@ -67,6 +68,10 @@ const RolesUsersMaster = ({
               handleRowAppend={handleRowAppendUsers}
               setEditedRows={setEditedRowsUsers}
               onCellClicked={onCellClickedUser}
+              selection={selectionUser}
+              setSelection={setSelectionUser}
+              onSearch={onSearchUsers}
+              isLoading={isLoadingUser}
             />
           </SplitterPanel>
         </Splitter>

@@ -132,14 +132,6 @@ const AuthLogin = ({ setIsLoggedIn, ...rest }) => {
                 />
               </Form.Item>
 
-              {logInFailMessage && (
-                <div className="flex justify-center w-full">
-                  <Typography.Text type="danger" italic>
-                    {logInFailMessage}
-                  </Typography.Text>
-                </div>
-              )}
-
               <Form.Item label="Language" name="language">
                 <Select
                   name="language"

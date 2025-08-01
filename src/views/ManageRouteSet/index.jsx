@@ -1346,8 +1346,8 @@ const ManageRouteSetPage = ({ canCreate, canEdit, canDelete, canView }) => {
     if (!Array.isArray(operationSelected) || operationSelected.length === 0) {
       notify({
           type: 'error',
-          message: 'Loi',
-          description: 'Hay lua chon cong doan!'
+          message: 'Lỗi',
+          description: 'Chưa lựa chọn công đoạn.'
         });
       return;
     }
@@ -1355,8 +1355,8 @@ const ManageRouteSetPage = ({ canCreate, canEdit, canDelete, canView }) => {
     if (!routeId) {
       notify({
           type: 'error',
-          message: 'Loi',
-          description: 'Luu du lieu quy trinh truoc khi chon!'
+          message: 'Lỗi',
+          description: 'Quy trình chưa được lưu.'
         });
       return;
     }

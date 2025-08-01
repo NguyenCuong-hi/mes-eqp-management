@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { DataEditor, GridCellKind } from '@glideapps/glide-data-grid';
-import { DeleteOutlined, EditOutlined, TableOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, LoadingOutlined, SearchOutlined, TableOutlined } from '@ant-design/icons';
 import { useLayer } from 'react-laag';
 // import LayoutMenuSheet from '../../sheet/jsx/layoutMenu'
 // import LayoutStatusMenuSheet from '../../sheet/jsx/layoutStatusMenu'
@@ -35,7 +35,10 @@ function UsersRegisTable({
   setCols,
   cols,
   defaultCols,
-  canEdit
+  canEdit,
+  onSearch,
+  isLoading,
+  setIsLoading
 }) {
   const gridRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -130,13 +133,13 @@ function UsersRegisTable({
         };
       }
 
-      if (columnKey === 'PassedQty' || columnKey === 'RejectQty' || columnKey === 'QCQty') {
+      if (columnKey === 'lastLoginFalures' || columnKey === 'totalLoginFailures' || columnKey === 'QCQty') {
         return {
           kind: GridCellKind.Number,
           data: value,
           displayData: new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 5,
-            maximumFractionDigits: 5
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 1
           }).format(value),
           readonly: column?.readonly || false,
           contentAlign: 'right',
@@ -427,12 +430,9 @@ function UsersRegisTable({
           <Input
             placeholder="Search"
             allowClear
-            // onSearch={onSearch}
-            style={{ width: 300 , 
-              borderRadius: '0',
-              borderTop: '0',
-              borderRight: '0',
-              boxShadow: 'none'}}
+            onChange={onSearch}
+            style={{ width: 300, borderRadius: '0', borderTop: '0', borderRight: '0', boxShadow: 'none' }}
+            suffix={isLoading ? <LoadingOutlined className="animate-spin" /> : <SearchOutlined />}
           />
         </div>
         <ContextMenuWrapper
@@ -469,14 +469,14 @@ function UsersRegisTable({
             getRowThemeOverride={(i) =>
               i === hoverRow
                 ? {
-                  bgCell: '#f7f7f7',
-                  bgCellMedium: '#f0f0f0'
-                }
+                    bgCell: '#f7f7f7',
+                    bgCellMedium: '#f0f0f0'
+                  }
                 : i % 2 === 0
                   ? undefined
                   : {
-                    bgCell: '#FBFBFB'
-                  }
+                      bgCell: '#FBFBFB'
+                    }
             }
             overscrollY={0}
             overscrollX={0}
@@ -488,15 +488,14 @@ function UsersRegisTable({
             onRowAppended={() => handleRowAppend(1)}
             onCellEdited={onCellEdited}
             onCellClicked={onCellClicked}
-
             onColumnResize={onColumnResize}
-          // onHeaderMenuClick={onHeaderMenuClick}
-          // onColumnMoved={onColumnMoved}
-          // onKeyUp={onKeyUp}
-          // customRenderers={[
-          //     AsyncDropdownCellRenderer
-          // ]}
-          // onItemHovered={onItemHovered}
+            // onHeaderMenuClick={onHeaderMenuClick}
+            // onColumnMoved={onColumnMoved}
+            // onKeyUp={onKeyUp}
+            // customRenderers={[
+            //     AsyncDropdownCellRenderer
+            // ]}
+            // onItemHovered={onItemHovered}
           />
           {/* {showMenu !== null &&
                     renderLayer(
@@ -534,7 +533,6 @@ function UsersRegisTable({
                         </div>,
                     )} */}
         </ContextMenuWrapper>
-
 
         <Drawer title="CÀI ĐẶT SHEET" onClose={onClose} open={open}>
           {defaultCols.map(

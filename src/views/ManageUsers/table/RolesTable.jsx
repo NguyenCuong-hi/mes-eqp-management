@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { DataEditor, GridCellKind } from '@glideapps/glide-data-grid';
-import { DeleteOutlined, EditOutlined, FilterOutlined, TableOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FilterOutlined, LoadingOutlined, SearchOutlined, TableOutlined } from '@ant-design/icons';
 import { useLayer } from 'react-laag';
 // import LayoutMenuSheet from '../../sheet/jsx/layoutMenu'
 // import LayoutStatusMenuSheet from '../../sheet/jsx/layoutStatusMenu'
@@ -36,7 +36,10 @@ function RolesTable({
   setCols,
   cols,
   defaultCols,
-  canEdit
+  canEdit,
+  onSearch,
+  isLoading,
+  setIsLoading
 }) {
   const gridRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -423,10 +426,12 @@ function RolesTable({
           placeholder="Search"
           allowClear
           className="w-full"
+          onChange={onSearch}
           style={{
             border: 'none',
             boxShadow: 'none'
           }}
+          suffix={isLoading ? <LoadingOutlined className="animate-spin" /> : <SearchOutlined />}
         />
         <ContextMenuWrapper
           menuItems={[

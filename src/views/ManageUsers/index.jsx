@@ -12,17 +12,15 @@ import useDynamicFilter from 'utils/hooks/useDynamicFilter';
 import { filterAndSelectColumns } from 'utils/sheets/filterUorA';
 import { validateCheckColumns } from 'utils/sheets/validateColumns';
 import { CreateByService } from 'services/ManageUsers/CreateByService';
-import { UpdateByService } from 'services/ManageUsers/UpdateByService';
 import { useNotify } from 'utils/hooks/onNotify';
 import { useFullscreenLoading } from 'utils/hooks/useFullscreenLoading';
 import { SearchBy } from 'services/ManageUsers/SearchBy';
 import { updateEditedRows } from 'utils/sheets/updateEditedRows';
 import useConfirmDialog from 'utils/hooks/useConfirmDialog';
-import { DeleteByService, DeleteUserByService } from 'services/ManageUsers/DeleteUserByService';
-import { UpdateRoleByService } from 'services/ManageUsers/UpdateRoleByService';
+import { DeleteUserByService } from 'services/ManageUsers/DeleteUserByService';
 import { CreateRoleByService } from 'services/ManageUsers/CreateRoleByService';
 import { getUserByRole } from 'services/ManageUsers/GetUserByRole';
-import { use } from 'react';
+import { debounce } from 'lodash';
 
 // ==============================|| ACCOUNT PRODUCT PAGE ||============================== //
 
@@ -32,6 +30,8 @@ const ManageUsers = ({ canCreate }) => {
   const { spinning, percent, showLoader, hideLoader } = useFullscreenLoading();
   const [isAPISuccess, setIsAPISuccess] = useState(true);
   const { showConfirm } = useConfirmDialog();
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [isLoadingRole, setIsLoadingRole] = useState(false);
 
   const defaultCols = useMemo(() => [
     {
@@ -229,7 +229,7 @@ const ManageUsers = ({ canCreate }) => {
     },
     {
       title: t('Người tạo'),
-      id: 'createBy',
+      id: 'createdBy',
       kind: 'Text',
       readonly: false,
       width: 200,
@@ -308,7 +308,7 @@ const ManageUsers = ({ canCreate }) => {
     {
       title: t('Hết hạn khóa bảo mật'),
       id: 'credentialsNonExpired',
-      kind: 'Text',
+      kind: 'Boolean',
       readonly: false,
       width: 200,
       hasMenu: true,
@@ -385,6 +385,7 @@ const ManageUsers = ({ canCreate }) => {
   const [numRowsToAddUsers, setNumRowsToAddUsers] = useState(null);
   const [addedRowsUsers, setAddedRowsUsers] = useState([]);
   const [editedRowsUsers, setEditedRowsUsers] = useState([]);
+  const [roleName, setRoleName] = useState('');
 
   const handleRowAppendUsers = useCallback(
     (numRowsToAdd) => {
@@ -406,7 +407,7 @@ const ManageUsers = ({ canCreate }) => {
   const [isSent, setIsSent] = useState(false);
 
   //   Load
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (keyword) => {
     if (!isAPISuccess) return;
     setIsAPISuccess(false);
     try {
@@ -414,7 +415,7 @@ const ManageUsers = ({ canCreate }) => {
         {
           pageIndex: 1,
           pageSize: 50,
-          keywork: ''
+          keywork: keyword || ''
         }
       ];
 
@@ -518,26 +519,21 @@ const ManageUsers = ({ canCreate }) => {
 
       const results = await Promise.all(promises);
 
-      const updateGridData = (newData) => {
-        setGridData((prevGridData) =>
-          prevGridData.map((item) => {
-            const matchingData = newData.find((data) => data.IDX_NO === item.IdxNo);
-            return matchingData ? { ...matchingData, IdxNo: matchingData.IDX_NO } : item;
-          })
-        );
-      };
-
       results.forEach((result, index) => {
-        if (result?.success && result.data?.data) {
-          const newData = result.data.data;
-          updateGridData(newData);
+        if (result?.success && result?.data) {
           setEditedRowsUsers([]);
           hideLoader();
           notify({
-            type: 'error',
+            type: 'success',
             message: 'Thành công',
             description: index === 0 ? 'Thêm mới thành công' : 'Cập nhật thành công'
           });
+          const data = {
+            roleCode: clickedRowData.name,
+            page: 0,
+            size: 10
+          };
+          fetchUserByRoles(data);
         } else {
           hideLoader();
           notify({
@@ -560,61 +556,7 @@ const ManageUsers = ({ canCreate }) => {
     }
   }, [editedRowsUsers]);
 
-  const onClickDelete = useCallback(() => {
-    showConfirm({
-      title: 'Xác nhận xóa bản ghi?',
-      content: '',
-      onOk: async () => {
-        return handleDelete();
-      }
-    });
-  }, []);
-
-  const handleDelete = useCallback(async () => {
-    if (selectedUser.length === 0) {
-      notify({
-        type: 'error',
-        message: 'Lỗi',
-        description: 'Không có dữ liệu để xóa!'
-      });
-      setIsSent(false);
-      throw new Error('Không có dữ liệu');
-    }
-
-    try {
-      const promises = [];
-      if (selectedUser.length > 0) promises.push(DeleteUserByService(selectedUser));
-
-      const results = await Promise.all(promises);
-
-      results.forEach((result) => {
-        if (result?.success && result.data?.data) {
-          notify({
-            type: 'success',
-            message: 'Thành công',
-            description: 'Xóa thành công'
-          });
-        } else {
-          notify({
-            type: 'error',
-            message: 'Lỗi',
-            description: result?.message || 'Đã có lỗi xảy ra, thử lại'
-          });
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      notify({
-        type: 'error',
-        message: 'Lỗi',
-        description: 'Đã có lỗi xảy ra, thử lại'
-      });
-      throw error;
-    } finally {
-      setIsSent(false);
-    }
-  }, []);
-
+ 
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
 
@@ -687,11 +629,13 @@ const ManageUsers = ({ canCreate }) => {
   );
 
   const fetchUserByRoles = async (data) => {
+    setIsLoadingUser(true);
     try {
       const result = await getUserByRole(data);
       if (result?.success && result?.data) {
         setGridDataUsers(result?.data);
         setNumRowsUsers(result?.data.length);
+        setIsLoadingUser(false);
       } else {
         notify({
           type: 'error',
@@ -706,6 +650,8 @@ const ManageUsers = ({ canCreate }) => {
         message: 'Lỗi',
         description: 'Đã có lỗi xảy ra, thử lại'
       });
+    } finally {
+      setIsLoadingUser(false);
     }
   };
 
@@ -751,6 +697,7 @@ const ManageUsers = ({ canCreate }) => {
     columns: CompactSelection.empty(),
     rows: CompactSelection.empty()
   });
+
   const onCellClickedUser = useCallback(
     (cell, event) => {
       let rowIndex;
@@ -770,18 +717,10 @@ const ManageUsers = ({ canCreate }) => {
       }
 
       if (rowIndex >= 0 && rowIndex < gridDataUsers.length) {
-        const rowData = gridDataUsers[rowIndex];
-
-        const data = [
-          {
-            id: rowData.ItemSeq,
-            roleName: rowData.ItemNo
-          }
-        ];
         setSelectUser(getSelectedRowsUsers());
       }
     },
-    [gridData]
+    [gridDataUsers, selectedUser, selectionUser]
   );
 
   const getSelectedRowsUsers = () => {
@@ -816,9 +755,112 @@ const ManageUsers = ({ canCreate }) => {
     return rows;
   };
 
+  const handleDelete = useCallback(async () => {
+
+    if (selectedUser.length === 0) {
+      notify({
+        type: 'error',
+        message: 'Lỗi',
+        description: 'Không có dữ liệu để xóa!'
+      });
+      setIsSent(false);
+      throw new Error('Không có dữ liệu');
+    }
+
+    try {
+      const promises = [];
+      const ids = selectedUser.map((item) => item.id).filter((id) => id !== undefined);
+      if (selectedUser.length > 0) promises.push(DeleteUserByService(ids));
+
+      const results = await Promise.all(promises);
+
+      results.forEach((result) => {
+        if (result?.success && result?.data) {
+          notify({
+            type: 'success',
+            message: 'Thành công',
+            description: 'Xóa thành công'
+          });
+          const data = {
+            roleCode: clickedRowData.name,
+            page: 0,
+            size: 10
+          };
+          fetchUserByRoles(data);
+        } else {
+          notify({
+            type: 'error',
+            message: 'Lỗi',
+            description: result?.message || 'Đã có lỗi xảy ra, thử lại'
+          });
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      notify({
+        type: 'error',
+        message: 'Lỗi',
+        description: 'Đã có lỗi xảy ra, thử lại'
+      });
+      throw error;
+    } finally {
+      setIsSent(false);
+    }
+  }, [selectedUser, clickedRowData]);
+
+   const onClickDelete = useCallback(() => {
+     showConfirm({
+       title: 'Xác nhận xóa bản ghi?',
+       content: '',
+       onOk: async () => {
+         return handleDelete();
+       }
+     });
+   }, [selectedUser]);
+
+   const debounceSearchUser = useMemo(() => 
+    debounce((value, roleCode) => {
+      if (value.trim()) {
+        const data = {
+          roleCode: roleCode,
+          keyword: value,
+          page: 0,
+          size: 10,
+        };
+        fetchUserByRoles(data);
+      }
+    }, 500)
+  , []);
+
+   const debounceSearchRole = useMemo(() => 
+    debounce((value) => {
+      if (value.trim()) {
+        const data = {
+          keyword: value,
+          page: 0,
+          size: 10,
+        };
+        fetchData(data);
+      }
+    }, 500)
+  , []);
+
+   const onSearchRoles = useCallback((value) => {
+     const keyword = value.target.value;
+       debounceSearchRole(keyword);
+   }, []);
+
+   const onSearchUsers = useCallback(
+     (value) => {
+      const keyword = value.target.value;
+       debounceSearchUser(keyword, clickedRowData.name);
+     },
+     [clickedRowData]
+   );
+
   return (
     <>
-      <div className="h-full pt-4 ">
+      <div className="h-full pt-4">
         <UsersAction title={'Đăng ký tài khoản'} onClickSave={onClickSave} onClickDelete={onClickDelete} onClickImport={onClickImport} />
         <RolesUsersMaster
           defaultCols={defaultCols}
@@ -831,6 +873,7 @@ const ManageUsers = ({ canCreate }) => {
           handleRowAppendRoles={handleRowAppendRoles}
           setEditedRowsRoles={setEditedRowsRoles}
           onCellClicked={onCellClicked}
+          onSearchRoles={onSearchRoles}
           defaultColsUsers={defaultColsUsers}
           gridDataUsers={gridDataUsers}
           setGridDataUsers={setGridDataUsers}
@@ -838,9 +881,14 @@ const ManageUsers = ({ canCreate }) => {
           setColsUsers={setColsUsers}
           numRowsUsers={numRowsUsers}
           setNumRowsUsers={setNumRowsUsers}
+          selectionUser={selectionUser}
+          setSelectionUser={setSelectionUser}
           handleRowAppendUsers={handleRowAppendUsers}
           setEditedRowsUsers={setEditedRowsUsers}
           onCellClickedUser={onCellClickedUser}
+          onSearchUsers={onSearchUsers}
+          isLoadingRole={isLoadingRole}
+          isLoadingUser={isLoadingUser}
         />
       </div>
       {contextHolder}
