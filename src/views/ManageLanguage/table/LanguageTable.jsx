@@ -426,15 +426,7 @@ function LanguageTable({
   return (
     <div className="w-full h-full gap-1 flex items-center justify-center ">
       <div className="w-full h-full flex flex-col border bg-white overflow-hidden ">
-        <div className="flex items-center justify-end ">
-          <Input
-            placeholder="Search"
-            allowClear
-            onChange={onSearch}
-            style={{ width: 300, borderRadius: '0', borderTop: '0', borderRight: '0', boxShadow: 'none' }}
-            suffix={isLoading ? <LoadingOutlined className="animate-spin" /> : <SearchOutlined />}
-          />
-        </div>
+        
         <ContextMenuWrapper
           menuItems={[
             { key: 'edit', label: 'Chỉnh sửa', icon: <EditOutlined /> },

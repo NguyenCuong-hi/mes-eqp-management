@@ -23,6 +23,8 @@ import { getUserByRole } from 'services/ManageUsers/GetUserByRole';
 import { debounce } from 'lodash';
 import LanguageTable from './table/LanguageTable';
 import { SearchLangBy } from 'services/Lang/SearchLangBy';
+import { CreateLangByService } from 'services/Lang/CreateLangByService';
+import LanguageAction from './action/LanguageAction';
 
 // ==============================|| ACCOUNT PRODUCT PAGE ||============================== //
 
@@ -220,27 +222,11 @@ const ManageLanguage = ({ canCreate }) => {
   //   Action
   const onClickSave = useCallback(async () => {
     showLoader();
-    const requiredColumns = ['userName', 'password'];
-
-    const commonColumnsRoles = ['id', 'name', 'createdBy', 'createdDate', 'modifiedDate', 'modifiedBy'];
+    const requiredColumns = ['langCode', 'langCodeVi', 'langCodeEn', 'langCodeKo', 'langVi', 'langEn', 'langKo'];
 
     const commonColumns = [
       'id',
-      'username',
-      'email',
-      'password',
-      'createdDate',
-      'createdBy',
-      'modifiedDate',
-      'modifiedBy',
-      'accountNonExpired',
-      'accountNonLocked',
-      'active',
-      'credentialsNonExpired',
-      'justCreated',
-      'lastLoginFalures',
-      'lastLoginTime',
-      'totalLoginFailures'
+      
     ];
 
     const validEntries = filterValidEntries();
@@ -260,20 +246,16 @@ const ManageLanguage = ({ canCreate }) => {
     const resulU = filterAndSelectColumns(gridData, commonColumns, 'U');
     const resulA = filterAndSelectColumns(gridData, commonColumns, 'A');
 
-    const resulURoles = filterAndSelectColumns(gridData, commonColumnsRoles, 'U');
-    const resulARoles = filterAndSelectColumns(gridData, commonColumnsRoles, 'A');
+
     const validationMessage = validateCheckColumns([...resulU, ...resulA], [...commonColumns, ...commonColumns], requiredColumns);
 
-    const usersNew = resulA.map((item) => {
+    const langNew = resulA.map((item) => {
       return {
         ...item,
-        roles: [clickedRowData.name],
-        confirmPassword: item.password,
-        userAuthorities: ['USER.CREATE']
       };
     });
 
-    const usersEdit = resulU.map((item) => {
+    const langEdit = resulU.map((item) => {
       return {
         ...item,
         roles: [clickedRowData.name],
@@ -290,14 +272,12 @@ const ManageLanguage = ({ canCreate }) => {
     if (isSent) return;
     setIsSent(true);
 
-    const dataRoles = [...resulURoles, ...resulARoles];
-    const dataUser = [...usersNew, ...usersEdit];
+    const dataLang = [...langNew, ...langEdit];
 
     try {
       const promises = [];
 
-      if (dataRoles.length > 0) promises.push(CreateRoleByService(dataRoles));
-      if (dataUser.length > 0) promises.push(CreateByService(dataUser));
+      if (dataLang.length > 0) promises.push(CreateLangByService(dataLang));
 
       const results = await Promise.all(promises);
 
@@ -558,7 +538,7 @@ const ManageLanguage = ({ canCreate }) => {
   return (
     <>
       <div className="h-full pt-4">
-        <UsersAction title={t('Từ điển')} onClickSave={onClickSave} onClickDelete={onClickDelete} onClickImport={onClickImport} />
+        <LanguageAction titlePage={t('Từ điển')} keyword={keyword} setKeyword={setKeyword} onClickSearch={onSearch} onClickSave={onClickSave} onClickDelete={onClickDelete} onClickImport={onClickImport} />
         <div className="bg-slate-50 h-full rounded-md overflow-auto ">
           <div className="bg-slate-50 rounded-md h-full ">
             <LanguageTable
