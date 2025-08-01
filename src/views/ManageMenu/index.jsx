@@ -1021,7 +1021,7 @@ const ManageMenu = ({ canCreate }) => {
     <>
       <div className="h-full pt-4">
         <MenuAuthorAction
-          title={'Đăng ký menu'}
+          title={t('Đăng ký menu')}
           onClickSave={onClickSave}
           onClickDelete={onClickDelete}
           onClickImport={onClickImport}

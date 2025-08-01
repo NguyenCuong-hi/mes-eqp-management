@@ -10,14 +10,11 @@ import { AuthLoginService } from 'services/Auth/GetTokenService';
 import Cookies from 'js-cookie'
 import { GetUserService } from 'services/Auth/GetUserService';
 
-const AuthLogin = ({ setIsLoggedIn, ...rest }) => {
+const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => {
   const [loading, setLoading] = useState(false);
   const [loadingView, setLoadingView] = useState(false);
   const [logInFailMessage, setLogInFailMessage] = useState('');
 
-  const [language, setLanguage] = useState(() => {
-    return parseInt(localStorage.getItem('language'), 10) || 6;
-  });
 
   const dispatch = useDispatch();
 
@@ -69,7 +66,7 @@ const AuthLogin = ({ setIsLoggedIn, ...rest }) => {
 
   
   const handleLanguageChange = (value) => {
-    setLanguage(value)
+    setLanguageUser(value)
     localStorage.setItem('language', value)
   }
 
@@ -91,6 +88,7 @@ const AuthLogin = ({ setIsLoggedIn, ...rest }) => {
           initialValues={{
             username: '',
             password: '',
+            language: 1,
             submit: null
           }}
           validationSchema={Yup.object().shape({
@@ -135,9 +133,10 @@ const AuthLogin = ({ setIsLoggedIn, ...rest }) => {
               <Form.Item label="Language" name="language">
                 <Select
                   name="language"
-                  value={language}
+                  value={languageUser}
                   onChange={handleLanguageChange}
                   size="large"
+                  initialValues={languageUser}
                   options={[
                     { value: 1, label: 'Vietnamese' },
                     { value: 2, label: 'English' },

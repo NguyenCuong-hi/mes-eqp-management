@@ -15,4 +15,5 @@ export const TabComponents = {
   ManageMachinePage: lazy(() => import("./views/ManageMachine")),
   ManageMachineDetails: lazy(() => import("./views/ManageMachineDetails")),
   ManageMenu: lazy(() => import("./views/ManageMenu")),
+  ManageLanguage: lazy(() => import("./views/ManageLanguage")),
 };
