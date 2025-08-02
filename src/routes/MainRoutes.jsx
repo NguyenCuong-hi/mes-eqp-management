@@ -1,7 +1,7 @@
 import React, { lazy, useEffect, useRef, useState } from 'react';
 
 // project import
-import { BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Layout } from 'antd';
 const { Content } = Layout;
 import { Suspense } from 'react';
