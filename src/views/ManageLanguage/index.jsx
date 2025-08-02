@@ -25,6 +25,7 @@ import LanguageTable from './table/LanguageTable';
 import { SearchLangBy } from 'services/Lang/SearchLangBy';
 import { CreateLangByService } from 'services/Lang/CreateLangByService';
 import LanguageAction from './action/LanguageAction';
+import { DeleteLangBy } from 'services/Lang/DeleteLangBy';
 
 // ==============================|| ACCOUNT PRODUCT PAGE ||============================== //
 
@@ -462,7 +463,7 @@ const ManageLanguage = ({ canCreate }) => {
     try {
       const promises = [];
       const ids = selected.map((item) => item.id).filter((id) => id !== undefined);
-      if (selected.length > 0) promises.push(DeleteUserByService(ids));
+      if (selected.length > 0) promises.push(DeleteLangBy(ids));
 
       const results = await Promise.all(promises);
 
@@ -473,12 +474,7 @@ const ManageLanguage = ({ canCreate }) => {
             message: 'Thành công',
             description: 'Xóa thành công'
           });
-          const data = {
-            roleCode: clickedRowData.name,
-            page: 0,
-            size: 10
-          };
-          fetchUserByRoles(data);
+          fetchData();
         } else {
           notify({
             type: 'error',
