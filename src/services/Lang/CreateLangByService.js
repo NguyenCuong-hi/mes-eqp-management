@@ -3,11 +3,11 @@ import { HOST_API_SERVER } from 'services/config';
 import { ERROR_MESSAGES } from 'utils/constans/sysConstans';
 import { accessToken } from 'utils/cookies/CookiesUtils';
 
-export const CreateLangByService = async (data) => {
+export const CreateLangByService = async (lang, data) => {
   try {
     const token = accessToken()
     const response = await axios.post(
-      `${HOST_API_SERVER}/nvc-core/api/v1/language/create-languages`,
+      `${HOST_API_SERVER}/nvc-core/api/v1/language/create-languages?lang=${lang}`,
       
         data
       ,

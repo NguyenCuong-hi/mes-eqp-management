@@ -35,6 +35,8 @@ const ManageLanguage = ({ canCreate }) => {
   const [isAPISuccess, setIsAPISuccess] = useState(true);
   const { showConfirm } = useConfirmDialog();
   const [isLoading, setIsLoading] = useState(false);
+  const [languageUser, setLanguageUser] = useState(Number(localStorage.getItem('language')) || 2);
+  
 
   const [gridData, setGridData] = useState([]);
   const [numRows, setNumRows] = useState(0);
@@ -96,7 +98,7 @@ const ManageLanguage = ({ canCreate }) => {
       }
     },
     {
-      title: t('Tiếng Việt'),
+      title: t('Mã Tiếng Việt'),
       id: 'langCodeVi',
       kind: 'Text',
       readonly: false,
@@ -122,7 +124,7 @@ const ManageLanguage = ({ canCreate }) => {
       }
     },
     {
-      title: t('Tiếng Anh'),
+      title: t('Mã Tiếng Anh'),
       id: 'langCodeEn',
       kind: 'Text',
       readonly: false,
@@ -148,13 +150,13 @@ const ManageLanguage = ({ canCreate }) => {
       }
     },
     {
-      title: t('Tiếng Hàn'),
+      title: t('Mã Tiếng Hàn'),
       id: 'langCodeKo',
       kind: 'Text',
       readonly: false,
       width: 200,
       hasMenu: true,
-      visible: true,
+      visible: false,
       icon: GridColumnIcon.HeaderRowID,
       trailingRowOptions: {
         disabled: true
@@ -195,13 +197,13 @@ const ManageLanguage = ({ canCreate }) => {
     if (!isAPISuccess) return;
     setIsAPISuccess(false);
     try {
-      const data = [
+      const data = 
         {
           pageIndex: pageIndex,
           pageSize: pageSize,
           keywork: keyword || ''
         }
-      ];
+      ;
 
       const response = await SearchLangBy(data);
       const fetchedData = response.data || [];
@@ -222,12 +224,9 @@ const ManageLanguage = ({ canCreate }) => {
   //   Action
   const onClickSave = useCallback(async () => {
     showLoader();
-    const requiredColumns = ['langCode', 'langCodeVi', 'langCodeEn', 'langCodeKo', 'langVi', 'langEn', 'langKo'];
+    const requiredColumns = ['langCode', 'langVi', 'langEn', 'langKo'];
 
-    const commonColumns = [
-      'id',
-      
-    ];
+    const commonColumns = ['id', 'lang', 'langCode', 'langCodeVi', 'langCodeEn', 'langCodeKo', 'langVi', 'langEn', 'langKo'];
 
     const validEntries = filterValidEntries();
     setCount(validEntries.length);
@@ -252,15 +251,19 @@ const ManageLanguage = ({ canCreate }) => {
     const langNew = resulA.map((item) => {
       return {
         ...item,
+        langCodeVi: 1,
+        langCodeEn: 2,
+        langCodeKo: 3,
+
       };
     });
 
     const langEdit = resulU.map((item) => {
       return {
         ...item,
-        roles: [clickedRowData.name],
-        confirmPassword: item.password,
-        userAuthorities: ['USER.CREATE']
+        langCodeVi: 1,
+        langCodeEn: 2,
+        langCodeKo: 3,
       };
     });
 
@@ -277,7 +280,7 @@ const ManageLanguage = ({ canCreate }) => {
     try {
       const promises = [];
 
-      if (dataLang.length > 0) promises.push(CreateLangByService(dataLang));
+      if (dataLang.length > 0) promises.push(CreateLangByService(languageUser, dataLang));
 
       const results = await Promise.all(promises);
 
@@ -290,12 +293,8 @@ const ManageLanguage = ({ canCreate }) => {
             message: 'Thành công',
             description: index === 0 ? 'Thêm mới thành công' : 'Cập nhật thành công'
           });
-          const data = {
-            roleCode: clickedRowData.name,
-            page: 0,
-            size: 10
-          };
-          fetchUserByRoles(data);
+
+          fetchData();
         } else {
           hideLoader();
           notify({
@@ -316,7 +315,7 @@ const ManageLanguage = ({ canCreate }) => {
       setIsSent(false);
       hideLoader();
     }
-  }, [editedRowsUsers]);
+  }, [gridData]);
 
   const [columns, setColumns] = useState([]);
 
@@ -511,34 +510,17 @@ const ManageLanguage = ({ canCreate }) => {
     });
   }, [selected]);
 
-  const debounceSearch = useMemo(
-    () =>
-      debounce((value, roleCode) => {
-        if (value.trim()) {
-          const data = {
-            roleCode: roleCode,
-            keyword: value,
-            page: 0,
-            size: 10
-          };
-          fetchUserByRoles(data);
-        }
-      }, 500),
-    []
-  );
-
   const onSearch = useCallback(
-    (value) => {
-      const keyword = value.target.value;
-      debounceSearch(keyword, clickedRowData.name);
+    () => {
+      fetchData();
     },
-    [clickedRowData]
+    [keyword, pageIndex, pageSize]
   );
 
   return (
     <>
       <div className="h-full pt-4">
-        <LanguageAction titlePage={t('Từ điển')} keyword={keyword} setKeyword={setKeyword} onClickSearch={onSearch} onClickSave={onClickSave} onClickDelete={onClickDelete} onClickImport={onClickImport} />
+        <LanguageAction titlePage={t('6')} keyword={keyword} setKeyword={setKeyword} onClickSearch={onSearch} onClickSave={onClickSave} onClickDelete={onClickDelete} onClickImport={onClickImport} />
         <div className="bg-slate-50 h-full rounded-md overflow-auto ">
           <div className="bg-slate-50 rounded-md h-full ">
             <LanguageTable

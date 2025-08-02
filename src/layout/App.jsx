@@ -31,7 +31,7 @@ const App = () => {
   const customization = useSelector((state) => state.customization);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingLogin, setCheckingLogin] = useState(true);
-  const [languageUser, setLanguageUser] = useState(Number(localStorage.getItem('language')) || 6);
+  const [languageUser, setLanguageUser] = useState(Number(localStorage.getItem('language')) || 2);
 
   const LanguageProvider = ({ children, keyLanguage }) => {
     const [isReady, setIsReady] = useState(false);
