@@ -30,6 +30,7 @@ import { GetUserService } from 'services/Auth/GetUserService';
 const App = () => {
   const customization = useSelector((state) => state.customization);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isChangePassword, setIsChangePassword] = useState(false);
   const [checkingLogin, setCheckingLogin] = useState(true);
   const [languageUser, setLanguageUser] = useState(Number(localStorage.getItem('language')) || 2);
 
@@ -107,11 +108,14 @@ const App = () => {
         const res = await GetUserService();
         if (res.success) {
           setIsLoggedIn(true);
+          setIsChangePassword(res.data.data.changePassword);
         } else {
           setIsLoggedIn(false);
+          setIsChangePassword(false);
         }
       } catch (error) {
         setIsLoggedIn(false);
+        setIsChangePassword(false);
       } finally {
         setCheckingLogin(false);
       }
@@ -123,7 +127,7 @@ const App = () => {
     return <LoadingBlur />;
   }
   if (!isLoggedIn) {
-    return <AuthLogin languageUser={languageUser} setLanguageUser={setLanguageUser} setIsLoggedIn={setIsLoggedIn} />;
+    return <AuthLogin languageUser={languageUser} setLanguageUser={setLanguageUser} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} isChangePassword={isChangePassword} setIsChangePassword={setIsChangePassword} />;
   }
 
   return (

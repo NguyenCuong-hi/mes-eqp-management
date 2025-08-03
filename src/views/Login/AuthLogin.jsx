@@ -1,31 +1,35 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Button, Divider, Form, Input, Select, Typography } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined } from '@ant-design/icons';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { addTab, setActiveTab } from 'store/tabsReducer';
 import LoadingBlur from 'component/Loader/LoadingBlur';
 import { AuthLoginService } from 'services/Auth/GetTokenService';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 import { GetUserService } from 'services/Auth/GetUserService';
+import ChangePassword from './ChangePassword';
 
-const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => {
+const AuthLogin = ({ languageUser, setLanguageUser, isLoggedIn, setIsLoggedIn, isChangePassword, setIsChangePassword, ...rest }) => {
   const [loading, setLoading] = useState(false);
   const [loadingView, setLoadingView] = useState(false);
   const [logInFailMessage, setLogInFailMessage] = useState('');
+
 
 
   const dispatch = useDispatch();
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
-    dispatch(addTab({
-      key: "home",
-      label: "Trang chủ",
-      component: "DashboardDefault",
-      permission: null,
-    }));
+    dispatch(
+      addTab({
+        key: 'home',
+        label: 'Trang chủ',
+        component: 'DashboardDefault',
+        permission: null
+      })
+    );
     dispatch(setActiveTab('home'));
     setLoadingView(true);
   };
@@ -35,20 +39,26 @@ const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => 
     try {
       const data = {
         username: values.username,
-        password: values.password,
-      }
+        password: values.password
+      };
 
       const loginResponse = await AuthLoginService(data);
 
       if (loginResponse.success) {
-        Cookies.set('token', loginResponse.data.access_token)
+        Cookies.set('token', loginResponse.data.access_token);
         const user = await GetUserService();
-        localStorage.setItem('username', JSON.stringify(user.data.data.username))
-        localStorage.setItem('role', JSON.stringify(user.data.data.roles))
-        localStorage.setItem('menu-item', JSON.stringify(user.data.data.menuItems))
-        setLoading(false);
-        setSubmitting(false);
-        handleLoginSuccess();
+        const userData = user.data.data;
+        if (userData.changePassword === true) {
+          setIsChangePassword(userData.changePassword);
+          localStorage.setItem('username', JSON.stringify(user.data.data.username));
+          localStorage.setItem('role', JSON.stringify(user.data.data.roles));
+          localStorage.setItem('menu-item', JSON.stringify(user.data.data.menuItems));
+          setLoading(false);
+          setSubmitting(false);
+          handleLoginSuccess();
+        } else {
+          setIsChangePassword(true)
+        }
       } else {
         setLogInFailMessage('Sai thông tin tài khoản hoặc mật khẩu đăng nhập !');
         setLoading(false);
@@ -62,20 +72,20 @@ const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => 
       setSubmitting(false);
       setLoadingView(false);
     }
-  }
+  };
 
-  
   const handleLanguageChange = (value) => {
-    setLanguageUser(value)
-    localStorage.setItem('language', value)
-  }
+    setLanguageUser(value);
+    localStorage.setItem('language', value);
+  };
 
   if (loadingView) {
     return <LoadingBlur />;
   }
 
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+  <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
         <div className="text-center mb-6">
           <Typography.Title level={2} className="!mb-0">
@@ -89,16 +99,24 @@ const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => 
             username: '',
             password: '',
             language: 1,
-            submit: null
+            submit: null,
           }}
           validationSchema={Yup.object().shape({
             username: Yup.string().max(255).required('Email is required'),
-            password: Yup.string().max(255).required('Password is required')
+            password: Yup.string().max(255).required('Password is required'),
           })}
           onSubmit={onSubmit}
         >
-          {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-            <Form layout="vertical" onFinish={handleSubmit} {...rest}>
+          {({
+            errors,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+            isSubmitting,
+            touched,
+            values,
+          }) => (
+            <Form layout="vertical" onFinish={handleSubmit}>
               <Form.Item
                 label="Username"
                 validateStatus={touched.username && errors.username ? 'error' : ''}
@@ -122,7 +140,9 @@ const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => 
                 <Input.Password
                   name="password"
                   placeholder="Enter your password"
-                  iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                  iconRender={(visible) =>
+                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                  }
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.password}
@@ -130,37 +150,37 @@ const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => 
                 />
               </Form.Item>
 
-              <Form.Item label="Language" name="language">
+              <Form.Item label="Language">
                 <Select
                   name="language"
                   value={languageUser}
                   onChange={handleLanguageChange}
                   size="large"
-                  initialValues={languageUser}
                   options={[
                     { value: 1, label: 'Vietnamese' },
                     { value: 2, label: 'English' },
                     { value: 3, label: 'Korean' },
                   ]}
-                >
-                  
-                </Select>
+                />
               </Form.Item>
 
               {logInFailMessage && (
-                <div className="flex justify-center w-full">
+                <div className="flex justify-center w-full mb-4">
                   <Typography.Text type="danger" italic>
                     {logInFailMessage}
                   </Typography.Text>
                 </div>
               )}
-              {/* 
-              <div className="flex justify-end mb-4">
-                <Typography.Link>Forgot Password?</Typography.Link>
-              </div> */}
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" block size="large" loading={isSubmitting || loading} className="!rounded-lg">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  size="large"
+                  loading={isSubmitting || loading}
+                  className="!rounded-lg"
+                >
                   Log In
                 </Button>
               </Form.Item>
@@ -168,8 +188,19 @@ const AuthLogin = ({languageUser, setLanguageUser, setIsLoggedIn, ...rest }) => 
           )}
         </Formik>
       </div>
-    </div>
-  );
+  
+
+    {isLoggedIn === false && isChangePassword === false && (
+      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <ChangePassword
+          onSuccess={handleLoginSuccess}
+          username={JSON.parse(localStorage.getItem('username'))}
+        />
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default AuthLogin;
