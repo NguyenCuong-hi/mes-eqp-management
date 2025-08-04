@@ -12,13 +12,13 @@ import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 import Cookies from 'js-cookie';
-import { Divider } from 'antd';
+import { Divider, Typography } from 'antd';
 
 // ==============================|| PROFILE SECTION ||============================== //
 
 const ProfileSection = () => {
   const theme = useTheme();
-  const username = localStorage.getItem('username');
+  const displayName = JSON.parse(localStorage.getItem('displayName') || '""');
 
 
   const [selectedIndex, setSelectedIndex] = React.useState(1);
@@ -99,46 +99,6 @@ const ProfileSection = () => {
           <Fade {...TransitionProps}>
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                {/* <List
-                  sx={{
-                    width: '100%',
-                    maxWidth: 350,
-                    minWidth: 250,
-                    backgroundColor: theme.palette.background.paper,
-                    pb: 0,
-                    borderRadius: '10px'
-                  }}
-                >
-                  <ListItemButton selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
-        
-                    <ListItemText primary={username} />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
-                    <ListItemIcon>
-                      <PersonTwoToneIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Profile" />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
-                    <ListItemIcon>
-                      <DraftsTwoToneIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="My Messages" />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
-                    <ListItemIcon>
-                      <LockOpenTwoTone />
-                    </ListItemIcon>
-                    <ListItemText primary="Lock Screen" />
-                  </ListItemButton>
-                  <ListItemButton selected={selectedIndex === 4} onClick={handleLogoutClick}>
-                    <ListItemIcon>
-                      <MeetingRoomTwoToneIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Logout" />
-                  </ListItemButton>
-                </List> */}
-
                 <List
                   sx={{
                     width: '100%',
@@ -149,30 +109,13 @@ const ProfileSection = () => {
                     borderRadius: '10px'
                   }}
                 >
-                  {/* Dòng hiển thị Full Name */}
-                  <ListItem
-                    sx={{
-                      cursor: 'default',
-                      pointerEvents: 'none',
-                      fontWeight: 'bold',
-                      color: theme.palette.text.primary,
-                    }}
-                  >
-                    <ListItemText
-                      primary={username}
-                      secondary={`@${username}`}
-                    />
-                  </ListItem>
 
-                  {/* Dòng kẻ phân cách */}
-                  <Divider variant="middle" />
 
-                  {/* Các mục có thể click */}
-                  <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+                  <ListItemButton selected={selectedIndex === 1} >
                     <ListItemIcon>
                       <PersonTwoToneIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Profile" />
+                    <ListItemText primary= {displayName} />
                   </ListItemButton>
 
                   <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>

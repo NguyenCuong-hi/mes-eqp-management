@@ -3,8 +3,10 @@ import { Tabs, Tab, IconButton, Box } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeTab, setActiveTab } from 'store/tabsReducer';
+import { useTranslation } from 'react-i18next';
 
 const DynamicTabs = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { tabList, activeTabKey } = useSelector((state) => state.tab);
 
@@ -16,6 +18,8 @@ const DynamicTabs = () => {
     e.stopPropagation();
     dispatch(removeTab(key));
   };
+
+  console.log('tabList', tabList);
 
 
   return (
@@ -33,7 +37,7 @@ const DynamicTabs = () => {
             value={tab.key}
             label={
               <Box display="flex" alignItems="center">
-                {tab.label}
+                {t(tab.labelLang)}
                 {tab.key !== 'home' && (
                   <IconButton
                     size="small"

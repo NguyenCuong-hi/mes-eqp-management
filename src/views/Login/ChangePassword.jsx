@@ -3,35 +3,49 @@ import React from 'react';
 import { Button, Form, Input, message } from 'antd';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { ChangeNewPassword } from 'services/Auth/ChangeNewPassword';
+import { useNotify } from 'utils/hooks/onNotify';
+import { useTranslation } from 'react-i18next';
 
-const ChangePassword = ({ }) => {
-  const handleChangePassword = async (values, { setSubmitting, resetForm }) => {
-    try {
-      // Gọi API đổi mật khẩu tại đây
-      // await ChangePasswordService(values);
-      message.success('Đổi mật khẩu thành công!');
-      resetForm();
-      onCancel(); // đóng modal
-    } catch (error) {
-      message.error('Đổi mật khẩu thất bại!');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+const ChangePassword = ({ handleLoginSuccess }) => {
+  const { notify, contextHolder } = useNotify();
+  const { t } = useTranslation();
+
+    const handleChangePassword = async (values, { setSubmitting, resetForm }) => {
+      try {
+        await ChangeNewPassword(values);
+        notify({
+            type: 'success',
+            message: 'Thành công',
+            description: t('22')
+          });
+        resetForm();
+        handleLoginSuccess();
+      } catch (error) {
+        console.error(error);
+        notify({
+            type: 'error',
+            message: 'Thất bại',
+            description: t('23')
+          });
+      } finally {
+        setSubmitting(false);
+      }
+    };
 
   return (
 
       <Formik
         initialValues={{
           oldPassword: '',
-          newPassword: '',
+          password: '',
           confirmPassword: ''
         }}
         validationSchema={Yup.object().shape({
           oldPassword: Yup.string().required('Vui lòng nhập mật khẩu cũ'),
-          newPassword: Yup.string().min(6, 'Tối thiểu 6 ký tự').required('Vui lòng nhập mật khẩu mới'),
+          password: Yup.string().min(6, 'Tối thiểu 6 ký tự').required('Vui lòng nhập mật khẩu mới'),
           confirmPassword: Yup.string()
-            .oneOf([Yup.ref('newPassword'), null], 'Mật khẩu xác nhận không khớp')
+            .oneOf([Yup.ref('password'), null], 'Mật khẩu xác nhận không khớp')
             .required('Vui lòng xác nhận mật khẩu')
         })}
         onSubmit={handleChangePassword}
@@ -53,14 +67,14 @@ const ChangePassword = ({ }) => {
 
             <Form.Item
               label="Mật khẩu mới"
-              validateStatus={touched.newPassword && errors.newPassword ? 'error' : ''}
-              help={touched.newPassword && errors.newPassword}
+              validateStatus={touched.password && errors.password ? 'error' : ''}
+              help={touched.password && errors.password}
             >
               <Input.Password
-                name="newPassword"
+                name="password"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.newPassword}
+                value={values.password}
               />
             </Form.Item>
 

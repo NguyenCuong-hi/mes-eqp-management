@@ -224,6 +224,20 @@ const ManageMenu = ({ canCreate }) => {
         disabled: true
       }
     },
+
+    {
+      title: t('Mã ngôn ngữ'),
+      id: 'labelLang',
+      kind: 'text',
+      readonly: false,
+      width: 200,
+      hasMenu: true,
+      visible: true,
+      icon: GridColumnIcon.HeaderRowID,
+      trailingRowOptions: {
+        disabled: true
+      }
+    },
     {
       title: t('Ngày tạo'),
       id: 'createDate',
@@ -838,7 +852,8 @@ const ManageMenu = ({ canCreate }) => {
       'keyParent',
       'component',
       'permission',
-      'sort'
+      'sort',
+      'labelLang'
     ];
 
     const validEntries = filterValidEntries();
@@ -952,9 +967,8 @@ const ManageMenu = ({ canCreate }) => {
 
     try {
       const ids = selectMenu.map((item) => item.id);
-      console.log(ids);
       const promises = [];
-      if (selectMenu.length > 0) promises.push(DeleteMenuByService(ids));
+      if (selectMenu.length > 0) promises.push(DeleteMenuByService(idRole, ids));
 
       const results = await Promise.all(promises);
 
@@ -984,7 +998,7 @@ const ManageMenu = ({ canCreate }) => {
     } finally {
       setIsSent(false);
     }
-  }, [selectMenu]);
+  }, [selectMenu, idRole]);
 
   const onClickImport = async (file) => {
     if (!file) return false;

@@ -126,13 +126,19 @@ const App = () => {
   if (checkingLogin) {
     return <LoadingBlur />;
   }
-  if (!isLoggedIn) {
-    return <AuthLogin languageUser={languageUser} setLanguageUser={setLanguageUser} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} isChangePassword={isChangePassword} setIsChangePassword={setIsChangePassword} />;
-  }
 
   return (
     <>
-      {
+      {!isLoggedIn ? (
+        <AuthLogin
+          languageUser={languageUser}
+          setLanguageUser={setLanguageUser}
+          isLoggedIn={isLoggedIn}
+          setIsLoggedIn={setIsLoggedIn}
+          isChangePassword={isChangePassword}
+          setIsChangePassword={setIsChangePassword}
+        />
+      ) : (
         <LanguageProvider keyLanguage={languageUser}>
           <NavigationScroll>
             <StyledEngineProvider injectFirst>
@@ -143,7 +149,7 @@ const App = () => {
             </StyledEngineProvider>
           </NavigationScroll>
         </LanguageProvider>
-      }
+      )}
     </>
   );
 };

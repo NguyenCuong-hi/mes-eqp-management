@@ -189,6 +189,19 @@ const ManageUsers = ({ canCreate }) => {
       }
     },
     {
+      title: t('Tên hiển thị'),
+      id: 'displayName',
+      kind: 'Text',
+      readonly: false,
+      width: 200,
+      hasMenu: true,
+      visible: true,
+      icon: GridColumnIcon.HeaderRowID,
+      trailingRowOptions: {
+        disabled: true
+      }
+    },
+    {
       title: t('Email'),
       id: 'email',
       kind: 'Text',
@@ -297,6 +310,19 @@ const ManageUsers = ({ canCreate }) => {
       id: 'active',
       kind: 'Boolean',
       readonly: false,
+      width: 200,
+      hasMenu: true,
+      visible: true,
+      icon: GridColumnIcon.HeaderRowID,
+      trailingRowOptions: {
+        disabled: true
+      }
+    },
+    {
+      title: t('Thay đổi mật khẩu'),
+      id: 'changePassword',
+      kind: 'Boolean',
+      readonly: true,
       width: 200,
       hasMenu: true,
       visible: true,
@@ -438,13 +464,14 @@ const ManageUsers = ({ canCreate }) => {
   //   Action
   const onClickSave = useCallback(async () => {
     showLoader();
-    const requiredColumns = ['userName', 'password'];
+    const requiredColumns = ['userName',];
 
     const commonColumnsRoles = ['id', 'name', 'createdBy', 'createdDate', 'modifiedDate', 'modifiedBy'];
 
     const commonColumns = [
       'id',
       'username',
+      'displayName',
       'email',
       'password',
       'createdDate',

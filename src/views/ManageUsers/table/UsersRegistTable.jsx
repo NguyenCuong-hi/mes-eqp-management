@@ -153,6 +153,7 @@ function UsersRegisTable({
         || columnKey === 'credentialsNonExpired'
         || columnKey === 'active'
         || columnKey === 'justCreated'
+        || columnKey === 'changePassword'
       ) {
         const booleanValue =
           value === 1 || value === '1'
@@ -165,6 +166,23 @@ function UsersRegisTable({
           data: booleanValue,
           allowOverlay: true,
           hasMenu: column?.hasMenu || false,
+        }
+      }
+
+      if ( columnKey === 'changePassword'
+      ) {
+        const booleanValue =
+          value === 1 || value === '1'
+            ? true
+            : value === 0 || value === '0'
+              ? false
+              : Boolean(value)
+        return {
+          kind: GridCellKind.Boolean,
+          data: booleanValue,
+          allowOverlay: true,
+          hasMenu: column?.hasMenu || false,
+          readonly: column?.readonly || true
         }
       }
 

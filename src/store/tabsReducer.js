@@ -7,6 +7,7 @@ const initialState = {
         label: "Trang chủ",
         component: "DashboardDefault",
         permission: null,
+        labelLang: "7"
       },
     
     ],

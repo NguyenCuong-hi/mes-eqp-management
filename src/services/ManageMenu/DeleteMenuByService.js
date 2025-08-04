@@ -4,19 +4,19 @@ import { accessToken } from 'utils/cookies/CookiesUtils';
 import qs from 'qs';
 
 
-export const DeleteMenuByService = async (id) => {
+export const DeleteMenuByService = async (idRole, menus) => {
   try {
-    const token = accessToken()
-    const response = await axios.delete(
-      `${HOST_API_SERVER}/menu-item/ids`,
+    const token = accessToken();
+      const response = await axios.put(
+      `${HOST_API_SERVER}/nvc-core/api/v1/menu-item/role/${idRole}`,
+      menus
+      ,
       {
-        params: { id },
-        paramsSerializer: params => qs.stringify(params, { arrayFormat: 'repeat' }),
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-        }
-      }
+        },
+      },
     );
 
     if (response.status === 200 || response.status === 201) {

@@ -5,10 +5,12 @@ import * as Icons from '@ant-design/icons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addTab, setActiveTab } from 'store/tabsReducer';
+import { useTranslation } from 'react-i18next';
 
 const { Sider } = Layout;
 
 const Sidebar = ({ drawerOpen, drawerToggle, sidebarWidth }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { tabList, activeTabKey } = useSelector((state) => state.tab);
 
@@ -24,7 +26,8 @@ const Sidebar = ({ drawerOpen, drawerToggle, sidebarWidth }) => {
       return {
         
         key: item.key,
-        label: item.label,
+        label: t(item.labelLang) || item.label,
+        labelLang: item.labelLang,
         icon: IconComponent ? <IconComponent /> : null,
         component: item?.component || null,
         children: Array.isArray(item.children)
@@ -84,6 +87,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, sidebarWidth }) => {
           label: menuItem.label,
           component: menuItem.component,
           permission: menuItem.permission,
+          labelLang: menuItem.labelLang
         })
       );
     }
