@@ -16,6 +16,7 @@ import useOnFill from 'utils/hooks/onFillHook';
 import { loadFromLocalStorageSheet } from 'utils/local-storage/column';
 import { resetColumn } from 'utils/local-storage/reset-column';
 import ContextMenuWrapper from 'component/ContextMenu';
+import { reorderColumns } from 'utils/sheets/reorderColumns';
 
 function UsersRegisTable({
   setSelection,
@@ -105,6 +106,32 @@ function UsersRegisTable({
     rightFill: true,
     selectColumn: false
   });
+
+  const uniqueColumnNames = [...new Set([
+    ])];
+
+    const highlightRegions = [
+        'SMBirthTypeName'
+    ].map(columnName => ({
+        color: '#E6F4FF',
+        range: {
+            x: reorderColumns(cols).indexOf(columnName),
+            y: 0,
+            width: 1,
+            height: numRows,
+        },
+    }))
+        .concat(
+            uniqueColumnNames.map(columnName => ({
+                color: '#F0F2F5',
+                range: {
+                    x: reorderColumns(cols).indexOf(columnName),
+                    y: 0,
+                    width: 1,
+                    height: numRows,
+                },
+            }))
+        );
 
   const getData = useCallback(
     ([col, row]) => {
@@ -503,6 +530,7 @@ function UsersRegisTable({
             onPaste={true}
             fillHandle={true}
             // keybindings={keybindings}
+            highlightRegions={highlightRegions}
             onRowAppended={() => handleRowAppend(1)}
             onCellEdited={onCellEdited}
             onCellClicked={onCellClicked}
@@ -513,7 +541,15 @@ function UsersRegisTable({
             // customRenderers={[
             //     AsyncDropdownCellRenderer
             // ]}
-            // onItemHovered={onItemHovered}
+            onItemHovered={onItemHovered}
+            theme={{
+              textDark: '#000000',
+              // bgIconHeader: '#009CA6',
+              // accentColor: '#009CA6',
+              // accentLight: '#009CA620',
+              fgIconHeader: '#FFFFFF',
+              baseFontStyle: '600 13px'
+            }}
           />
           {/* {showMenu !== null &&
                     renderLayer(

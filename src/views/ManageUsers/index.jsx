@@ -562,6 +562,7 @@ const ManageUsers = ({ canCreate }) => {
           };
           fetchUserByRoles(data);
         } else {
+          console.log(result);
           hideLoader();
           notify({
             type: 'error',

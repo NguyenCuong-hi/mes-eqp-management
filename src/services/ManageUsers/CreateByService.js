@@ -19,7 +19,7 @@ export const CreateByService = async (users) => {
       },
     );
 
-    if (response.status === 200 || response.status === 201) {
+    if (response.data.code === 200) {
       return {
         success: true,
         data: response.data.data,
@@ -27,7 +27,7 @@ export const CreateByService = async (users) => {
     } else {
       return {
         success: false,
-        message: response.error || ERROR_MESSAGES,
+        message: response.data.message || ERROR_MESSAGES,
       };
     }
   } catch (error) {

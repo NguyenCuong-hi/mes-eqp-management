@@ -485,7 +485,15 @@ function AuthorityRegistTable({
           // customRenderers={[
           //     AsyncDropdownCellRenderer
           // ]}
-          // onItemHovered={onItemHovered}
+          onItemHovered={onItemHovered}
+          theme={{
+              textDark: '#000000',
+              // bgIconHeader: '#009CA6',
+              // accentColor: '#009CA6',
+              // accentLight: '#009CA620',
+              fgIconHeader: '#FFFFFF',
+              baseFontStyle: '600 13px'
+            }}
           />
           {/* {showMenu !== null &&
                     renderLayer(

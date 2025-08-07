@@ -57,6 +57,10 @@ const AuthLogin = ({ languageUser, setLanguageUser, isLoggedIn, setIsLoggedIn, i
             setSubmitting(false);
             handleLoginSuccess();
           } else {
+            localStorage.setItem('username', JSON.stringify(user.data.data.username));
+            localStorage.setItem('displayName', JSON.stringify(user.data.data.displayName));
+            localStorage.setItem('role', JSON.stringify(user.data.data.roles));
+            localStorage.setItem('menu-item', JSON.stringify(user.data.data.menuItems));
             setIsChangePassword(true);
           }
         } else {
